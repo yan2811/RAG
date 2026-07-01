@@ -1,0 +1,37 @@
+# ===== Web 框架 =====
+fastapi==0.115.*
+uvicorn[standard]==0.34.*
+python-multipart==0.0.*
+sse-starlette==2.1.*
+
+# ===== 数据库 =====
+sqlalchemy==2.0.*
+pymysql==1.1.*
+
+# ===== 认证 =====
+python-jose[cryptography]==3.3.*
+bcrypt==4.2.*
+python-dotenv==1.0.*
+
+# ===== AI / RAG 核心 =====
+openai==1.58.*
+anthropic==0.39.*
+chromadb>=1.0,<2.0
+sentence-transformers==3.3.*
+
+# ===== 文档解析 =====
+pymupdf==1.25.*
+camelot-py==0.11.*
+opencv-python>=4.8
+
+# ===== 数据处理 =====
+pandas==2.2.*
+numpy==1.26.*
+pyecharts==2.0.*
+
+# ===== 工具 =====
+pydantic==2.10.*
+loguru==0.7.*
+aiofiles==24.1.*
+jieba==0.42.*
+pillow>=10.0
