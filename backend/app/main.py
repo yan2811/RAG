@@ -51,16 +51,27 @@ def startup_event():
     except Exception as e:
         print(f"[ERROR] 数据库初始化失败: {e}")
 
-    # 启动时从数据库重建 BM25 索引
-    try:
-        db = SessionLocal()
-        count = rebuild_bm25_from_db(db)
-        db.close()
-        print(f"[INFO] BM25 索引重建完成：{count} 个分块已加载")
-    except Exception as e:
-        import traceback
-        print(f"[WARN] BM25 索引构建失败: {e}")
-        traceback.print_exc()
+    # 启动时从数据库重建 BM25 索引（重试 2 次）
+    for attempt in range(2):
+        db = None
+        try:
+            db = SessionLocal()
+            # 先做一次简单查询确认数据库连接正常
+            from app.models.document import Document
+            doc_count = db.query(Document).filter(Document.is_deleted == 0).count()
+            print(f"[INFO] 检测到 {doc_count} 份文档，开始重建 BM25 索引...")
+            count = rebuild_bm25_from_db(db)
+            print(f"[INFO] BM25 索引重建完成：{count} 个分块已加载")
+            break  # 成功就退出重试循环
+        except Exception as e:
+            import traceback
+            print(f"[WARN] BM25 索引构建失败(第{attempt+1}次): {e}")
+            traceback.print_exc()
+            if attempt == 1:
+                print("[ERROR] BM25 索引重建彻底失败，RAG 检索将不可用。请检查数据库连接和文档解析状态。")
+        finally:
+            if db:
+                db.close()
 
 
 @app.get("/", summary="健康检查")

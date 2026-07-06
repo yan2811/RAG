@@ -94,7 +94,7 @@ def hybrid_search(
 
     # Step 2: BM25 关键词检索（带文档过滤）
     bm25 = get_bm25_index()
-    # 如果索引为空，尝试自动重建
+    # 如果索引为空，尝试自动重建（兜底机制）
     if bm25.N == 0:
         try:
             from app.core.database import SessionLocal
@@ -102,8 +102,8 @@ def hybrid_search(
             rebuild_bm25_from_db(db)
             db.close()
             logger.info("BM25 索引为空，已自动重建")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"BM25 自动重建失败: {e}")
     if bm25.N > 0:
         bm25_results = bm25.search(query, top_k=20)
         for idx, score in bm25_results:

@@ -241,6 +241,14 @@ def parse_document(db: Session, document_id: int) -> dict:
         doc.chunk_count = chunk_count
         db.commit()
 
+        # 解析完成后更新 BM25 索引（新增 chunk 加入检索）
+        try:
+            from app.services.search_service import rebuild_bm25_from_db
+            rebuild_bm25_from_db(db)
+            logger.info(f"[解析] 已更新 BM25 索引")
+        except Exception as e:
+            logger.warning(f"[解析] BM25 索引更新失败（不影响解析结果）: {e}")
+
         return {
             "status": "completed",
             "file_name": doc.file_name,

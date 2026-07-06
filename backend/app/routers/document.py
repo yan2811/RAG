@@ -6,7 +6,7 @@ import os
 import uuid
 import json
 
-import logger
+import logging
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
@@ -574,4 +574,4 @@ def _auto_tag_document(db: Session, doc: Document, full_text: str):
 
         if tags:
             db.commit()
-            logger.info(f"AI 自动标签: {tags}")
+            logging.info(f"AI 自动标签: {tags}")
